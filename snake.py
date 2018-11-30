@@ -1,11 +1,13 @@
 import pygame
 import time
+import random
 
 pygame.init()
 
 white = (255,255,255)
 black = (0,0,0)
 red = (255,0,0)
+green = (0, 155, 0)
 
 display_width = 800
 display_height = 600
@@ -24,6 +26,12 @@ FPS = 30
 #font object
 font = pygame.font.SysFont(None, 25)
 
+def snake(block_size, snakeList):
+    for elementXY in snakeList:
+
+        pygame.draw.rect(gameDisplay, green, [elementXY[0],elementXY[1],block_size,block_size])
+
+
 def message_to_screen(msg,color):
     screen_text = font.render(msg, True, color)
     #put the font on our game screen
@@ -37,9 +45,20 @@ def gameLoop():
     #first location head of the snake
     lead_x = display_width/2
     lead_y = display_height/2
+
     lead_x_change = 0
     lead_y_change = 0
-    #this is our gameLoop
+
+    snakeList = []
+    snakeLength = 1
+
+    #we do not want the randomly generated apples to appear from 800-810, which will not appear on the screen
+    #with '- block_size range is reduced to 0 -790, where the block will fill with 790-800
+    #round function will reduce or in crease the block to a multiple of 10, needed for overlapping when snake eats an apple
+    randAppleX = round(random.randrange(0, display_width - block_size)/10.0) * 10.0
+    randAppleY = round(random.randrange(0, display_height - block_size)/10.0) * 10.0
+    
+
     while not gameExit:
 
         while gameOver == True:
@@ -75,6 +94,7 @@ def gameLoop():
                     lead_y_change = 10
                     lead_x_change = 0
 
+        #goes off screen, game over
         if lead_x >= display_width or lead_x < 0 or lead_y >= display_height or lead_y < 0:
             gameOver = True
             # if event.type == pygame.KEYUP:
@@ -92,12 +112,26 @@ def gameLoop():
 
         #pygame.draw.rect('Surface', 'color', '[x,y,size(x,y)])
         #using my lead_x and lead_y variable allows me to move our rectangle
-        pygame.draw.rect(gameDisplay, black, [lead_x,lead_y,block_size,block_size])
+        pygame.draw.rect(gameDisplay, red, [randAppleX, randAppleY, block_size, block_size])
+        
+        
+        snakeHead = []
+        snakeHead.append(lead_x)
+        snakeHead.append(lead_y)
+        snakeList.append(snakeHead)
+        if len(snakeList) > snakeLength:
+            del snakeList[0]
+        snake(block_size, snakeList)
         #fill with rectangle, is faster processing
         #gameDisplay.fill(red, rect=[200,200,50,50])
 
         pygame.display.update()
         #higher fps means more processing power is used
+
+        if lead_x == randAppleX and lead_y == randAppleY:
+            randAppleX = round(random.randrange(0, display_width - block_size)/10.0) * 10.0
+            randAppleY = round(random.randrange(0, display_height - block_size)/10.0) * 10.0
+            snakeLength +=1
         clock.tick(FPS)
 
 
