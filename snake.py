@@ -121,6 +121,11 @@ def gameLoop():
         snakeList.append(snakeHead)
         if len(snakeList) > snakeLength:
             del snakeList[0]
+
+        #handles collision if we run into our own snake body
+        for eachSegment in snakeList [:-1]:
+            if eachSegment == snakeHead:
+                gameOver = True
         snake(block_size, snakeList)
         #fill with rectangle, is faster processing
         #gameDisplay.fill(red, rect=[200,200,50,50])
@@ -132,6 +137,8 @@ def gameLoop():
             randAppleX = round(random.randrange(0, display_width - block_size)/10.0) * 10.0
             randAppleY = round(random.randrange(0, display_height - block_size)/10.0) * 10.0
             snakeLength +=1
+
+
         clock.tick(FPS)
 
 
